@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>countUp</title>
+  </head>
+  <body>
+    <button onclick="runCountAnimate()">count</button>
+
+    <ul>
+      <li class="countAnimate" data-count-from="10" data-count-to="30">10</li>
+    </ul>
+
+    <!-- <ul>
+      <li class="countAnimate" data-count-from="58000" data-count-to="400">
+        58000
+      </li>
+    </ul> -->
+
+    <script>
+      // 애니메이션 지속시간 1000ms = 1초
+      const animationDuration = 1000;
+
+      // 애니메이션 초당 60회 업데이트.
+      // 프레임 지속 기간 계산
+      const frameDuration = 1000 / 5;
+
+      // 애니메이션에 필요한 프레임수 계산
+      // Math.round() 반올림
+      const totalFrames = Math.round(animationDuration / frameDuration);
+
+      // 카운트가 진행됨에 따라 카운트 속도를 늦추는 easeOut 함수
+      const easeOutQuad = (t) => t * (2 - t);
+      let animateFlag = 0;
+
+      const animateCount = (el) => {
+        console.log(animateFlag);
+        // 0 ~ totalframe
+        let frame = 0;
+
+        // count 범위 지정
+        // data-count-from ~ data.count-from
+        const countFrom = parseInt(el.dataset.countFrom, 10);
+        const countTo = parseInt(el.dataset.countTo, 10);
+
+        // 초당 60번 실행되는 애니메이션 시작
+        const counter = setInterval(() => {
+          console.log("=== else");
+          animateFlag = 1;
+          frame++;
+          // 진행상황 0, 1
+          // ease 함수에 전달하여 진행상황을 곡선처럼 진행
+          const progress = easeOutQuad(frame / totalFrames);
+          // progress 사용하여 현재 개수 계산
+          // const currentCount = Math.round(countTo * progress);
+          const currentCount =
+            countFrom + Math.round((countTo - countFrom) * progress);
+
+          // currentCount 가 바뀔때 update element
+          if (parseInt(el.innerHTML, 10) !== currentCount) {
+            el.innerHTML = currentCount;
+          }
+
+          if (frame === totalFrames) {
+            animateFlag = 0;
+            clearInterval(counter);
+          }
+        }, frameDuration);
+
+        if (animateFlag === 1) {
+          console.log("=== if");
+          clearInterval(counter);
+          animateFlag = 0;
+        }
+      };
+
+      const runCountAnimate = () => {
+        const countEls = document.querySelectorAll(".countAnimate");
+        countEls.forEach(animateCount);
+      };
+    </script>
+  </body>
+</html>
